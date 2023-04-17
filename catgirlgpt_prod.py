@@ -195,17 +195,21 @@ def isFirstDayOfMonth():
 
 ### add to running GPT-3.5 Tokens
 async def add_to_gpt3_5(user_id,user_dict,value):
-     if user_dict[user_id]['renew_check']==1:
+    if user_id not in user_dict:
+       await add_user(user_id, user_dict) 
+    if user_dict[user_id]['renew_check']==1:
        if not isFirstDayOfMonth():
         user_dict[user_id]['renew_check'] = 0
-     if user_dict[user_id]['renew_check']==0:
+    if user_dict[user_id]['renew_check']==0:
        if isFirstDayOfMonth():
          user_dict[user_id]['renew_check'] = 1
          user_dict[user_id]['user_gpt3_5'] = 0
-     user_dict[user_id]['user_gpt3_5'] += value
+    user_dict[user_id]['user_gpt3_5'] += value
 
 ### add to running GPT-4 Tokens
 async def add_to_gpt4(user_id,user_dict,value):
+    if user_id not in user_dict:
+       await add_user(user_id, user_dict) 
     if user_dict[user_id]['renew_check']==1:
        if not isFirstDayOfMonth():
         user_dict[user_id]['renew_check'] = 0
@@ -1257,11 +1261,6 @@ async def on_message(message):
         emoji_status = False
         cost_reply = False
         
-        if message.channel.id == log_channel and cmd == 'shutdown!':
-                  await logs.send(f'Admin ({interaction.user.name}[id:{interaction.user.id}]) has sent shutdown command. Taking a catnap, nya~!')
-                  await logs.send(f'***!!! Shutting down CatgirlGPT !!!***')
-                  await bot.change_presence(status=discord.Status.invisible)
-                  await bot.close()
                 
         # checks if in DMs
         if isinstance(message.channel,discord.channel.DMChannel):
@@ -1334,6 +1333,14 @@ async def on_message(message):
            #checks allowed channels in guilds for new messages        
            for i in allowed_channels: # scans allowed channels for new messages
 
+
+                if message.channel.id == logs.id and cmd == 'shutdown!':
+                    await logs.send(f'Admin ({message.user.name}[id:{message.user.id}]) has sent shutdown command. Taking a catnap, nya~!')
+                    await logs.send(f'***!!! Shutting down CatgirlGPT !!!***')
+                    await bot.change_presence(status=discord.Status.invisible)
+                    await bot.close()
+
+
                 # checks for active threads on message and in allowed_channels
                 try:
                     threads = await message.guild.active_threads()  
@@ -1349,7 +1356,7 @@ async def on_message(message):
                   msg_parent = 0
 
                 #if not midjourney
-                if ((message.channel.id ==i or message.channel in threads) and message.author.id not in midjourney and not message.author.bot and gpt_left and not emoji_status and not message.channel.id == int(log_channel)):
+                if ((message.channel.id ==i or message.channel in threads) and message.channel.id != logs.id and message.author.id not in midjourney and not message.author.bot and gpt_left and not emoji_status and not message.channel.id == int(log_channel)):
                     ti = running_costs
                     yon = await vote(AI(user_id,user_data,model,True_Role,"A senpai sent a message.  Keep in mind you do not want to emoji react to every message, should you emoji react to this one? Vote simply 'yes' or 'no' if you should react to the following message: \n"+content,temp_default,5,0,1,False),5,"yes")
                     #await logs.send(f"Current Total Running Costs: ${running_costs}")
