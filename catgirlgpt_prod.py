@@ -1266,7 +1266,12 @@ async def on_message(message):
         emoji_status = False
         cost_reply = False
         
-
+        if message.channel.id == log_channel and cmd == 'shutdown!':
+                  await logs.send(f'Admin ({interaction.user.name}[id:{interaction.user.id}]) has sent shutdown command. Taking a catnap, nya~!')
+                  await logs.send(f'***!!! Shutting down CatgirlGPT !!!***')
+                  await bot.change_presence(status=discord.Status.invisible)
+                  await bot.close()
+                
         # checks if in DMs
         if isinstance(message.channel,discord.channel.DMChannel):
           if user_id not in user_data:
