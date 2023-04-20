@@ -1287,6 +1287,13 @@ async def on_message(message):
           if not dm_check and message.author.bot is False:
               await message.reply("[Free trial users are not allowed to DM CatgirlGPT.  You can upgrade to a paid plan to do so by vising the website: TBD")
           elif dm_check and message.author.bot is False:
+                    # checks if the user has gpt time left
+                    gpt_left = await gpt4_timeleft(user_id,user_data)
+                    if gpt_left is False:
+                        await message.reply("[You are out of CatgirlGPT time!]")
+                    # if else go on to normal code
+                    else:
+                    # if else then goes on to do the regular code
                       user_mode = user_data[user_id]['mode'] 
                       # checks for gpt 4 mode
                       if user_mode == 1:
@@ -1323,10 +1330,6 @@ async def on_message(message):
            if user_id not in user_data:
                await add_user(user_id, user_data)
 
-           # checks if the user has gpt time left
-           gpt_left = await gpt4_timeleft(user_id,user_data)
-           if gpt_left is False:
-               await message.reply("[You are out of CatgirlGPT time!]")
            True_Role = role_check(user_data,user_id)
            True_Prompt = second_role_check(user_data,user_id,True_Name,content,hist0)
 
@@ -1385,6 +1388,12 @@ async def on_message(message):
 
                 #if the bot is directly mentioned
                 if ((message.channel.id == i or msg_parent  == i) and message.author.id != bot_user_id and not message.author.bot) and ((message.reference and message.reference.resolved.author == bot.user) or (name_search is not None) or bot.user.mentioned_in(message) or user_data[user_id]['reply_status']) and not reply_status and gpt_left:
+                    # checks if the user has gpt time left
+                    gpt_left = await gpt4_timeleft(user_id,user_data)
+                    if gpt_left is False:
+                        await message.reply("[You are out of CatgirlGPT time!]", ephemeral = True)
+                    # if else then goes on to do the regular code
+                    else:
                                user_mode = user_data[user_id]['mode'] 
                                # checks for gpt 4 mode
                                if user_mode == 1:
