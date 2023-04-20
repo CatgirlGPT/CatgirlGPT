@@ -144,24 +144,25 @@ async def heartbeat():
           user_id = i['author']['did']
           if user_id not in user_data:
             await add_user(user_id, user_data)
-          try:
-               await like(uri)
-               await logs.send(f'🟦 Sent a like on Bluesky! URI: \n {uri}')
-          except Exception as e:
-             await logs.send(f'🚨🟦  An exception has occurred while adding a like on bluesky: \n {e}')
         # check auto_tog
-        if i['reason'] == 'mention' or i['reason'] == 'reply' and auto_tog:
+        if i['reason'] == 'mention' or i['reason'] == 'reply':
             bot_check = await check_bot_post(uri,bot_did)
             check_reply = await check_reply_status(uri,bot_did)
             # attempt to make a reply
             #print('mentioned!')
             ti = running_costs  
             if not check_reply and not bot_check:
+              try:
+                 await like(uri)
+                 await logs.send(f'🟦 Sent a like on Bluesky! URI: \n {uri}')
+              except Exception as e:
+                 await logs.send(f'🚨🟦  An exception has occurred while adding a like on bluesky: \n {e}')
               await logs.send(f'🟦 Received "mention" and reply_check returned false, autonomous toggle for bluesky mode: {auto_tog}')
               content = i['record']['text']
               prompt = f"Your senpai sent you a message on bluesky social, write your response to continue the conversation to be maximally in character as your role, Kaelia, but keep it less than 280 characters. {content}"
               check_character_length = False
-              while not check_character_length:
+              if auto_tog:
+               while not check_character_length:
                 skoot0 = await AI(user_id,user_data,model, default_role, prompt, temp_default, 1, 0,max_tokens, False)
                 skoot1 = skoot0.choices[0].message.content
                 if len(skoot1) <= 280:
