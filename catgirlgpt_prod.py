@@ -828,6 +828,7 @@ def role_check(my_dict,user_id):
  elif my_dict[user_id]['nsfw'] ==  5:
         return my_dict[user_id]['hornt_creator_role']
 
+    
 ####################################################
 ##### start of button BLUE SKY definitions!!!! #####
 ####################################################
@@ -933,8 +934,8 @@ async def info(interaction: discord.Interaction, prompt : str):
   ### add to bluesky costs
   await add_to_skyline_costs(delta)
   await logs.send(f"🟦 Bluesky Current Total Running Costs: ${skyline_costs}")
-  await interaction.followup.send(content=skoot,view=blueskies())
-    
+  await interaction.followup.send(content=skoot,view=blueskies())    
+
 ###########################################
 ##### start of button definitions!!!! #####
 ###########################################
@@ -1394,6 +1395,7 @@ async def on_message(message):
           if not dm_check and message.author.bot is False:
               await message.reply("[Free trial users are not allowed to DM CatgirlGPT.  You can upgrade to a paid plan to do so by vising the website: TBD")
           elif dm_check and message.author.bot is False:
+
                     # checks if the user has gpt time left
                     gpt_left = await gpt4_timeleft(user_id,user_data)
                     if gpt_left is False:
@@ -1415,13 +1417,15 @@ async def on_message(message):
                                  temp_now = temp_default
                       reply_status = True
                       await logs.send("someone calls for my attention")
+                      # simulates typing 
+                      await message.channel.typing()  
                       if name_search is not None:
                           await logs.send("they said my name!")
                       user = message.author.id
+                      now_role = role_check(user_data,user_id)
+                      now_prompt = second_role_check(user_data,user_id,True_Name,content,hist)                  
                       await short_term_mem(message,True_Name,"no bot msg",stm_dict,user_data,True,now_limit,now_tokens,now_model,now_role)
                       hist = hist_to_str(stm_dict,user_id)
-                      now_role = role_check(user_data,user_id)
-                      now_prompt = second_role_check(user_data,user_id,True_Name,content,hist)
                       response= await AI(user_id,user_data,now_model, now_role, now_prompt, temp_now, n_default,0.25,now_tokens,False)
                       await logs.send(f"Current Total Running Costs: ${running_costs}")
                       await short_term_mem(message,True_Name,response.choices[0].message.content,stm_dict,user_data,False,now_limit,now_tokens,now_model,now_role)
@@ -1501,7 +1505,7 @@ async def on_message(message):
                     # checks if the user has gpt time left
                     gpt_left = await gpt4_timeleft(user_id,user_data)
                     if gpt_left is False:
-                        await message.reply("[You are out of CatgirlGPT time!]", ephemeral = True)
+                        await message.reply("[You are out of CatgirlGPT time!]")
                     # if else then goes on to do the regular code
                     else:
                                user_mode = user_data[user_id]['mode'] 
