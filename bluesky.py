@@ -44,6 +44,20 @@ log_channel = 1098343252349964358
 allowed_servers = [1097307431157112994]
 allowed_channels = list()
 
+#load_dotenv("/content/drive/MyDrive/AI/CatgirlGPT/preem_users.env")
+#preem_users_json = os.getenv('preem_users')
+#preem_users_list = json.loads(preem_users_json)
+#preem_users_dict = {int(user['id']): user['value'] for user in preem_users_list}
+
+# load autocode + bluesky info 
+
+new_path = '/content/drive/MyDrive/AI/CatgirlGPT/bluesky.env'
+load_dotenv(path)
+#bot_did = os.environ.get('bot_did')
+auto_code = os.environ.get('auto_code')
+bksy_user = os.environ.get('bsky_username')
+save_path = '/content/drive/MyDrive/AI/CatgirlGPT/bluesky/'
+
 ### defines blue sky functions
 
 
