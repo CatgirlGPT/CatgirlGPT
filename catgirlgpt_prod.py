@@ -1359,7 +1359,11 @@ async def on_message(message):
                   msg_parent = 0
 
                 #if not midjourney
-                if ((message.channel.id ==i or message.channel in threads) and message.channel.id != logs.id and message.author.id not in midjourney and not message.author.bot and gpt_left and not emoji_status and not message.channel.id == int(log_channel)):
+                if ((message.channel.id ==i or message.channel in threads) and message.channel.id != logs.id and message.author.id not in midjourney and not message.author.bot and not emoji_status and not message.channel.id == int(log_channel)):
+                  gpt_left = await gpt4_timeleft(user_id,user_data)
+                  if gpt_left is True:
+                    # if else then goes on to do the regular code
+                    else:  
                     ti = running_costs
                     yon = await vote(AI(user_id,user_data,model,True_Role,"A senpai sent a message.  Keep in mind you do not want to emoji react to every message, should you emoji react to this one? Vote simply 'yes' or 'no' if you should react to the following message: \n"+content,temp_default,5,0,1,False),5,"yes")
                     #await logs.send(f"Current Total Running Costs: ${running_costs}")
@@ -1387,7 +1391,7 @@ async def on_message(message):
                             await logs.send(f"couldn't send emoji in error message. \n {e}")
 
                 #if the bot is directly mentioned
-                if ((message.channel.id == i or msg_parent  == i) and message.author.id != bot_user_id and not message.author.bot) and ((message.reference and message.reference.resolved.author == bot.user) or (name_search is not None) or bot.user.mentioned_in(message) or user_data[user_id]['reply_status']) and not reply_status and gpt_left:
+                if ((message.channel.id == i or msg_parent  == i) and message.author.id != bot_user_id and not message.author.bot) and ((message.reference and message.reference.resolved.author == bot.user) or (name_search is not None) or bot.user.mentioned_in(message) or user_data[user_id]['reply_status']) and not reply_status:
                     # checks if the user has gpt time left
                     gpt_left = await gpt4_timeleft(user_id,user_data)
                     if gpt_left is False:
