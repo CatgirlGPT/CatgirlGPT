@@ -828,6 +828,113 @@ def role_check(my_dict,user_id):
  elif my_dict[user_id]['nsfw'] ==  5:
         return my_dict[user_id]['hornt_creator_role']
 
+####################################################
+##### start of button BLUE SKY definitions!!!! #####
+####################################################
+
+global lib
+global skyline_costs
+global skoot
+global bot_did
+bot_did = 'did:plc:55a3jjlxnshlwoyyeieucn6d'
+skoot = ''
+skyline_costs = 0
+lib = lib({'token': 'tok_dev_E5ToBL96nxfuD5sjWChDi1xARdBkT2xkcJHZ2rC3cVpHqUxmYyfhEDA8pAxdzUMp'})
+
+# creates bluesky messages on TL
+async def post(msg):
+  result = lib.bluesky.feed['@0.0.2'].posts.create({
+    'content': msg # required
+  });
+  return result
+
+
+### defines buttons for relationshion status
+class blueskies(discord.ui.View): # creates class called view that subclasses discord.ui.view to make buttons
+
+  # defines button removal
+  async def disable_buttons(self, interaction):
+    self.clear_items()
+    message = await interaction.original_response()
+    await message.edit(view=self)
+
+
+  #sends generated skoot
+  @discord.ui.button(label="🟦 Send post to skyline", style=discord.ButtonStyle.success)
+  async def post_skoot(self, interaction: discord.Interaction, button: discord.ui.Button):
+    now_role = default_role
+    # Acknowledge the interaction before sending the message
+    await interaction.response.defer()
+    await self.disable_buttons(interaction)
+    try:
+      await post(skoot)
+      await interaction.followup.send("[Bluesky post sent!]") #sends message
+    except Exception as e:
+      await interaction.followup.send(f'Bluesky post failed to send, contact nya-dmins: \n {e}') #follow-up if fail
+
+
+  # regenerates skoot
+  @discord.ui.button(label="🔄 Try again, Kaelia! Regenerate the post.",style=discord.ButtonStyle.secondary)
+  async def regen_skoot(self,interaction:discord.Interaction, button: discord.ui.Button):
+      ti = running_costs 
+      now_role = default_role # sets role
+      await interaction.response.defer()
+      await self.disable_buttons(interaction)
+      print(f'Asked to rewrite: \n {skoot}')
+      # creates the message
+      check_character_length = False
+      while not check_character_length:
+        skoot0 = await AI('','',model, now_role, f"Senpai asked you to re-write this message in the character of your role Kaelia, and keep your re-write less than 280 characters, please! {skoot}", temp_default, 1, 0,max_tokens, False)
+        skoot1 = skoot0.choices[0].message.content
+        print
+        if len(skoot1) <= 280:
+         check_character_length = True
+         await add_skoot(skoot1)
+         print(f'New skoot: \n {skoot}')
+      tf = running_costs
+      delta = tf-ti
+      ### add to bluesky costs
+      await add_to_skyline_costs(delta)
+      await logs.send(f"🟦 Bluesky Current Total Running Costs: ${skyline_costs}")
+      await interaction.followup.send(content=skoot,view=blueskies())
+
+
+  #cancels generated skoot
+  @discord.ui.button(label="🗙 Do not send post to skyline.", style=discord.ButtonStyle.danger)
+  async def cancel_skoot(self, interaction: discord.Interaction, button: discord.ui.Button):
+    # Acknowledge the interaction before sending the message
+    await interaction.response.defer()
+    await self.disable_buttons(interaction)
+    sent_message = await interaction.followup.send("[Bluesky post cancelled!]") #sends message
+ 
+
+
+##############################
+## BLUE SKY slash commands  ##
+##############################
+
+@bot.tree.command(description="Prompt Kaelia for her to post on bluesky social (Swift Paws Kitty + Kawaii Only)!",name="bluesky")
+async def info(interaction: discord.Interaction, prompt : str):
+  ti = running_costs 
+  now_role = default_role # sets role
+  await interaction.response.defer()
+  # creates the message
+  check_character_length = False
+  while not check_character_length:
+       skoot0 = await AI('','',model, now_role, f"Write a message to bluesky social media in the character of your role Kaelia, and keep it less than 280 characters!  It should be a message about {prompt}", temp_default, 1, 0,max_tokens, False)
+       skoot1 = skoot0.choices[0].message.content
+       print
+       if len(skoot1) <= 280:
+         check_character_length = True
+         await add_skoot(skoot1)
+         print(f"Generated message via /bluesky: \n {skoot}")
+  tf = running_costs
+  delta = tf-ti
+  ### add to bluesky costs
+  await add_to_skyline_costs(delta)
+  await logs.send(f"🟦 Bluesky Current Total Running Costs: ${skyline_costs}")
+  await interaction.followup.send(content=skoot,view=blueskies())
+    
 ###########################################
 ##### start of button definitions!!!! #####
 ###########################################
