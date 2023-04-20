@@ -134,6 +134,11 @@ async def reply_skoot(uri,msg):
   });
   return result
 
+
+# defines following and followers lists as globals so i don't populate it every time
+followers_did = []
+following_did = []
+
 async def heartbeat():
     await bot.wait_until_ready()
     while not bot.is_closed():
@@ -145,7 +150,7 @@ async def heartbeat():
       except Exception as e:
         await logs.send(f'🟦 Error loading bluesky user pickle: \n {e}')
       try:
-        check_new = await check_new_followers(bot_did,5)
+        check_new = await check_new_followers(bot_did,2)
         if check_new > 0:
            await logs.send(f"There were {check_new} followers added successfully, senpai! nya~!")
       except Exception as e:
@@ -199,33 +204,32 @@ async def heartbeat():
             # This is working now, only uncomment for debugging.
             #elif check_reply:
               #await logs.send(f'🟦 I already replied to this message, senpai! Nya~! \n URI: \n {uri}') 
-        await save_users(user_data)
         await asyncio.sleep(5) # wait for 5 seconds before running again
 
 
-
-async def check_new_followers(did,limit):
+async def check_new_followers(did, limit):
+  global followers_did
+  global following_did
   # make API request to check following, sends dids to list
   following = lib.bluesky.feed['@0.0.2'].profiles.follows.list({
     'author': 'did:plc:55a3jjlxnshlwoyyeieucn6d',
-    'limit': limit
-  });
+  })
   follows_json = following['follows']
-  following_did = []
+
   # make API request to check followers
   followers = lib.bluesky.feed['@0.0.2'].profiles.followers.list({
     'author': 'did:plc:55a3jjlxnshlwoyyeieucn6d', # required
-    'limit': limit
-  });
+  })
   followers_json = followers['followers']
-  followers_did = []
-  for follower in follows_json:
-    did = follower['did']
-    following_did.append(did)
+
+  for follow in follows_json:
+    did = follow['did']
+    if did not in following_did:
+       following_did.append(did)
 
   for follower in followers_json:
     did = follower['did']
-    if did not in following_did:
+    if did not in followers_did:
         followers_did.append(did)
 
   # checks if i am not following a user yet
@@ -233,15 +237,16 @@ async def check_new_followers(did,limit):
   success = 0
 
   # adds any followers i am not following yet
-  for follower in not_following_back:
+  for follower_id in not_following_back:
     #make API request
     try:
       result = lib.bluesky.feed['@0.0.2'].follows.create({
-        'author': follower # required
+        'author': follower_id # required
       });
+      await logs.send(f'New user added: \n {result}')
+      success += 1
     except Exception as e:
       await logs.send(f'🚨🟦 Bluesky module had an exception when trying to add a follower: \n {e}')
-    success += 1
   return success
 
 
@@ -604,5 +609,5 @@ async def on_message(message):
 
 
 
-bot.run(token) #bot stars working, used when running on google cloud/terminal
-#await bot.start(token) #bot stars working, used when running in colab
+#bot.run(token) #bot stars working, used when running on google cloud/terminal
+await bot.start(token) #bot stars working, used when running in colab
