@@ -21,7 +21,7 @@ import numpy as np
 import datetime
 from lib import lib
 
-path = "/content/drive/MyDrive/AI/CatgirlGPT/catgirl_bluesky.env"
+path = "/home/inko1nsiderate/catgirlgpt_prod/catgirl.env"
 
 # load discord/oai token, bot_user_id, allowed_servers, default name, and default role from .env file
 load_dotenv(path)
@@ -43,20 +43,6 @@ short_parse_prompt = os.environ.get("short_parse_prompt")
 log_channel = 1098343252349964358
 allowed_servers = [1097307431157112994]
 allowed_channels = list()
-
-#load_dotenv("/content/drive/MyDrive/AI/CatgirlGPT/preem_users.env")
-#preem_users_json = os.getenv('preem_users')
-#preem_users_list = json.loads(preem_users_json)
-#preem_users_dict = {int(user['id']): user['value'] for user in preem_users_list}
-
-# load autocode + bluesky info 
-
-new_path = '/content/drive/MyDrive/AI/CatgirlGPT/bluesky.env'
-load_dotenv(path)
-#bot_did = os.environ.get('bot_did')
-auto_code = os.environ.get('auto_code')
-bksy_user = os.environ.get('bsky_username')
-save_path = '/content/drive/MyDrive/AI/CatgirlGPT/bluesky/'
 
 ### defines blue sky functions
 
@@ -204,7 +190,7 @@ async def heartbeat():
             # This is working now, only uncomment for debugging.
             #elif check_reply:
               #await logs.send(f'🟦 I already replied to this message, senpai! Nya~! \n URI: \n {uri}') 
-        await asyncio.sleep(5) # wait for 5 seconds before running again
+        await asyncio.sleep(2) # wait for 2 seconds before running again
 
 
 async def check_new_followers(did, limit):
@@ -609,5 +595,5 @@ async def on_message(message):
 
 
 
-#bot.run(token) #bot stars working, used when running on google cloud/terminal
-await bot.start(token) #bot stars working, used when running in colab
+bot.run(token) #bot stars working, used when running on google cloud/terminal
+#await bot.start(token) #bot stars working, used when running in colab
