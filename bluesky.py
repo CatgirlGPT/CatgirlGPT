@@ -83,7 +83,10 @@ async def check_bot_post(uri,bot_did):
 
 #defines a function to check for replies
 async def check_reply_status(uri,bot_did):
-  orig_post = await get_post(uri)
+  try:
+     orig_post = await get_post(uri)
+  except Exception as e:
+    await logs.send(f'An exception occurred while trying to get a post:\n {e}')
   replies = orig_post['replies']
   for post in replies:
      dids = post['post']['author']['did']
@@ -106,6 +109,21 @@ def toggle_bool():
     global auto_tog
     auto_tog = not auto_tog
 
+# defines check for if bot is parent for reply
+
+async def check_parent_did(uri,bot_did):
+    try:
+      post = await get_post(uri)
+    except Exception as e:
+      await logs.send(f'An exception has occured while geting post in check_paren: \n {e}')
+    try:
+        parent_post = await get_post(post['post']['record']['reply']['parent']['uri'])
+    except:
+        return False
+    parent_did = parent_post['post']['author']['did']
+    if parent_did == bot_did:
+        return True
+    return False
 
 #send a message
 async def reply_skoot(uri,msg):
@@ -127,14 +145,14 @@ async def heartbeat():
       except Exception as e:
         await logs.send(f'🟦 Error loading bluesky user pickle: \n {e}')
       try:
-        check_new = await check_new_followers(bot_did,10)
+        check_new = await check_new_followers(bot_did,5)
         if check_new > 0:
            await logs.send(f"There were {check_new} followers added successfully, senpai! nya~!")
       except Exception as e:
         await logs.send(f'🚨🟦 An exception occurred while trying to add new followers on bluesky: \n {e}')
       # make API request
       result = lib.bluesky.feed['@0.0.2'].notifications.list({
-          'limit': 15
+          'limit': 10
       });
       for i in result['notifications']:
         reason = i['reason']
@@ -144,8 +162,9 @@ async def heartbeat():
           user_id = i['author']['did']
           if user_id not in user_data:
             await add_user(user_id, user_data)
+          bot_parent = await check_parent_did(uri,bot_did)
         # check auto_tog
-        if i['reason'] == 'mention' or i['reason'] == 'reply':
+          if i['reason'] == 'mention' or (i['reason'] == 'reply' and bot_parent):
             bot_check = await check_bot_post(uri,bot_did)
             check_reply = await check_reply_status(uri,bot_did)
             # attempt to make a reply
