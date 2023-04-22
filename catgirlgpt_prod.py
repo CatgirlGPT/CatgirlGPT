@@ -19,6 +19,7 @@ import random
 import math
 import numpy as np
 import datetime
+from lib import lib
 
 path = "/home/inko1nsiderate/catgirlgpt_prod/catgirl.env"
 
@@ -218,6 +219,7 @@ async def add_to_gpt4(user_id,user_dict,value):
         user_dict[user_id]['renew_check'] = 1
         user_dict[user_id]['user_gpt4'] = 0
     user_dict[user_id]['user_gpt4'] += value
+    await logs.send(f'Troubelshooting Log: Added {value} to GPT4 usage')
 
 
 ### Role Levels
@@ -840,8 +842,8 @@ global bot_did
 bot_did = 'did:plc:55a3jjlxnshlwoyyeieucn6d'
 skoot = ''
 skyline_costs = 0
-lib = lib({'token': 'tok_dev_E5ToBL96nxfuD5sjWChDi1xARdBkT2xkcJHZ2rC3cVpHqUxmYyfhEDA8pAxdzUMp'})
-
+#lib = lib({'token': 'tok_dev_E5ToBL96nxfuD5sjWChDi1xARdBkT2xkcJHZ2rC3cVpHqUxmYyfhEDA8pAxdzUMp'})
+lib = lib({'token': 'tok_dev_ntPBL7uJMSpP8xCTyZceHZA19YgtBSqdbfkHYF4PAQJchT2YcX74fA3WmWdTnbBC'})
 # creates bluesky messages on TL
 async def post(msg):
   result = lib.bluesky.feed['@0.0.2'].posts.create({
@@ -849,8 +851,22 @@ async def post(msg):
   });
   return result
 
+# checks notifcations, hits like if they mentioned, responds if mentioned
 
-### defines buttons for relationshion status
+# add to skoot
+async def add_skoot(msg):
+  global skoot 
+  skoot = f'{msg}'
+  return skoot
+
+
+### add to bluesky costs
+async def add_to_skyline_costs(value):
+    global skyline_costs
+    skyline_costs +=value
+
+
+### defines buttons for bluesky status
 class blueskies(discord.ui.View): # creates class called view that subclasses discord.ui.view to make buttons
 
   # defines button removal
@@ -877,7 +893,10 @@ class blueskies(discord.ui.View): # creates class called view that subclasses di
   # regenerates skoot
   @discord.ui.button(label="🔄 Try again, Kaelia! Regenerate the post.",style=discord.ButtonStyle.secondary)
   async def regen_skoot(self,interaction:discord.Interaction, button: discord.ui.Button):
-      ti = running_costs 
+      ti = running_costs
+      user_id = interaction.user.id
+      if user_id not in user_data:
+          await add_user(user_id, user_data) 
       now_role = default_role # sets role
       await interaction.response.defer()
       await self.disable_buttons(interaction)
@@ -885,7 +904,7 @@ class blueskies(discord.ui.View): # creates class called view that subclasses di
       # creates the message
       check_character_length = False
       while not check_character_length:
-        skoot0 = await AI('','',model, now_role, f"Senpai asked you to re-write this message in the character of your role Kaelia, and keep your re-write less than 280 characters, please! {skoot}", temp_default, 1, 0,max_tokens, False)
+        skoot0 = await AI(user_id,user_data,model, now_role, f"Senpai asked you to re-write this message in the character of your role Kaelia, and keep your re-write less than 280 characters, please! {skoot}", temp_default, 1, 0,max_tokens, False)
         skoot1 = skoot0.choices[0].message.content
         print
         if len(skoot1) <= 280:
@@ -919,10 +938,13 @@ async def info(interaction: discord.Interaction, prompt : str):
   ti = running_costs 
   now_role = default_role # sets role
   await interaction.response.defer()
+  user_id = interaction.user.id
+  if user_id not in user_data:
+      await add_user(user_id, user_data)
   # creates the message
   check_character_length = False
   while not check_character_length:
-       skoot0 = await AI('','',model, now_role, f"Write a message to bluesky social media in the character of your role Kaelia, and keep it less than 280 characters!  It should be a message about {prompt}", temp_default, 1, 0,max_tokens, False)
+       skoot0 = await AI(user_id,user_data,model, now_role, f"Write a message to bluesky social media in the character of your role Kaelia, and keep it less than 280 characters!  It should be a message about {prompt}", temp_default, 1, 0,max_tokens, False)
        skoot1 = skoot0.choices[0].message.content
        print
        if len(skoot1) <= 280:
@@ -1102,7 +1124,8 @@ async def info(interaction: discord.Interaction):
   user_id = interaction.user.id
   if user_id not in user_data:
       await add_user(user_id, user_data)
-  await update_patron_levels(interaction.user,user_id,user_data)
+  if isinstance(interaction.channel, discord.TextChannel):
+      await update_patron_levels(interaction.user,user_id,user_data)
   catgirl_info = await user_info_check(user_id,user_data)
   await interaction.response.send_message(content=catgirl_info, ephemeral=True)
 
@@ -1423,9 +1446,9 @@ async def on_message(message):
                           await logs.send("they said my name!")
                       user = message.author.id
                       now_role = role_check(user_data,user_id)
+                      hist = hist_to_str(stm_dict,user_id)
                       now_prompt = second_role_check(user_data,user_id,True_Name,content,hist)                  
                       await short_term_mem(message,True_Name,"no bot msg",stm_dict,user_data,True,now_limit,now_tokens,now_model,now_role)
-                      hist = hist_to_str(stm_dict,user_id)
                       response= await AI(user_id,user_data,now_model, now_role, now_prompt, temp_now, n_default,0.25,now_tokens,False)
                       await logs.send(f"Current Total Running Costs: ${running_costs}")
                       await short_term_mem(message,True_Name,response.choices[0].message.content,stm_dict,user_data,False,now_limit,now_tokens,now_model,now_role)
@@ -1470,7 +1493,7 @@ async def on_message(message):
                   msg_parent = 0
 
                 #if not midjourney
-                if ((message.channel.id ==i or message.channel in threads) and message.channel.id != logs.id and message.author.id not in midjourney and not message.author.bot and not emoji_status and not message.channel.id == int(log_channel)):
+                if ((message.channel.id ==i or message.channel in threads) and (message.channel.id != logs.id or message.channe.id != 1098343252349964358) and message.author.id not in midjourney and not message.author.bot and not emoji_status and not message.channel.id == int(log_channel)):
                   gpt_left = await gpt4_timeleft(user_id,user_data)
                   if gpt_left is True:
                     # if else then goes on to do the regular code
