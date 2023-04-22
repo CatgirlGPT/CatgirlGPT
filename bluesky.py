@@ -280,8 +280,10 @@ async def heartbeat():
               if auto_tog:
                reply_to_uri= uri
                context = await parent_tree(reply_to_uri)
+               if len(context) != 0:
+                  prompt+= f'Your senpai and you have been part of a conversation on bluesky social, write your your next response to continue the conversation to be maximally in character as your role, Kaelia, but keep it less than 280 characters and do not append your repsonse with "Kaleia:" or double quotes.  Prior conversation: \n {context}'
                # logging function, comment out if it works:
-               await logs.send(f'Here is the context for the reply: \n {context}')
+               await logs.send(f'***Here is the prompt + context for the reply:*** \n {prompt}')
                while not check_character_length:
                 skoot0 = await AI(user_id,user_data,model, default_role, prompt, temp_default, 1, 0,max_tokens, False)
                 skoot1 = skoot0.choices[0].message.content
