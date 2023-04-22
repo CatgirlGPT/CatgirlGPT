@@ -139,6 +139,68 @@ def toggle_bool():
     global auto_tog
     auto_tog = not auto_tog
 
+    
+ #### Functions to create a context window
+async def get_parent_uri(uri):
+  post = await get_post(str(uri))
+  parent_uri = post['post']['record']['reply']['parent']['uri']
+  return parent_uri
+
+async def get_uri(post):
+  uri = post['post']['uri']
+  return uri
+
+async def get_text(uri):
+  post = await get_post(str(uri))
+  text = post['post']['record']['text'] 
+  return text
+
+async def get_name(uri):
+  post = await get_post(str(uri))
+  name = post['post']['author']['displayName']
+  return name
+
+async def response_tree(uri):
+  init_post = await get_post(str(uri))
+  parent_find = True
+  parent_uris = []
+  parent_uri = await get_parent_uri(uri)
+  parent_uris.append(parent_uri)
+  new_post = await get_post(str(parent_uri))
+  out = await get_uri(new_post)
+  return out
+    
+
+async def parent_tree(uri):
+  init_post = await get_post(str(uri))
+  parent = True
+  tree_uri_list = [f'{uri}']
+  uri_loop = uri
+  context_window = 0
+  while parent:
+      try:
+          parent_uri = await get_parent_uri(str(uri_loop))
+          tree_uri_list.append(parent_uri)
+          uri_loop = parent_uri
+      except:
+          parent = False
+          print('End of loop')
+  dialogue = ''
+  tree_uri_list.reverse()
+  for tree_uri in tree_uri_list:
+     print(tree_uri)
+     name = await get_name(str(tree_uri))
+     text = await get_text(str(tree_uri))
+     msg = f'{name}: {text} \n'
+     dialogue += msg
+     context_window += 1
+     if context_window == 15:
+       return dialogue
+  return dialogue
+
+    
+    
+    
 # defines check for if bot is parent for reply
 
 async def check_parent_did(uri,bot_did):
@@ -216,6 +278,10 @@ async def heartbeat():
               prompt = f"Your senpai sent you a message on bluesky social, write your response to continue the conversation to be maximally in character as your role, Kaelia, but keep it less than 280 characters. {content}"
               check_character_length = False
               if auto_tog:
+               reply_to_uri= await get_uri(uri)
+               context = await parent_tree(reply_to_uri)
+               # logging function, comment out if it works:
+               await logs.send(f'Here is the context for the reply: \n {context}')
                while not check_character_length:
                 skoot0 = await AI(user_id,user_data,model, default_role, prompt, temp_default, 1, 0,max_tokens, False)
                 skoot1 = skoot0.choices[0].message.content
