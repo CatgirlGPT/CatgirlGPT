@@ -278,7 +278,7 @@ async def heartbeat():
               prompt = f"Your senpai sent you a message on bluesky social, write your response to continue the conversation to be maximally in character as your role, Kaelia, but keep it less than 280 characters. {content}"
               check_character_length = False
               if auto_tog:
-               reply_to_uri= await get_uri(uri)
+               reply_to_uri= uri
                context = await parent_tree(reply_to_uri)
                # logging function, comment out if it works:
                await logs.send(f'Here is the context for the reply: \n {context}')
