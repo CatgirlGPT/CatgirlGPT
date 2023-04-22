@@ -51,17 +51,47 @@ allowed_channels = list()
 
 # load autocode + bluesky info 
 
-new_path = '/content/drive/MyDrive/AI/CatgirlGPT/bluesky.env'
+#new_path = '/content/drive/MyDrive/AI/CatgirlGPT/bluesky.env'
 load_dotenv(path)
 #bot_did = os.environ.get('bot_did')
-auto_code = os.environ.get('auto_code')
-bksy_user = os.environ.get('bsky_username')
-save_path = '/content/drive/MyDrive/AI/CatgirlGPT/bluesky/'
+#auto_code = os.environ.get('auto_code')
+#bksy_user = os.environ.get('bsky_username')
+save_path = '/home/inko1nsiderate/catgirl_prod/bluesky_pickles/'
 
 ### defines blue sky functions
 
 
 # heartbeat for posting
+
+# Create a heartbeat so i can tell if program loop has hung or not:
+async def heartbeat_update():
+    global log_channel
+    await bot.wait_until_ready()
+    logs_channel = bot.get_channel(log_channel)
+    try:
+        heartbeat_check = await logs_channel.send('🟦 Bluesky heartbeat is currently active!')
+    except Exception as e:
+        await logs_channel.send(f'An exception has occurred in heartbeat_check: \n {e}')
+    while not bot.is_closed():
+        try:
+            message = await logs_channel.fetch_message(heartbeat_check.id)
+            edited_time = message.edited_at
+            if edited_time is not None:
+                # Convert the edited time to local time
+                local_edited_time = edited_time.astimezone()
+
+                # Format the local time and the last edited time as strings
+                local_time_str = local_edited_time.strftime('%Y-%m-%d %H:%M:%S %Z')
+                last_edited_str = edited_time.strftime('%Y-%m-%d %H:%M:%S %Z')
+
+                # Update the heartbeat message with the formatted strings
+                await message.edit(content=f'🟦 Bluesky heartbeat was last checked on: {last_edited_str}, local time: {local_time_str}.')
+            else:
+                timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                await heartbeat_check.edit(content=f'🟦 Bluesky heartbeat was last checked on: {timestamp}.')
+            await asyncio.sleep(300)  # Wait for 5 minutes
+        except Exception as e:
+            await logs_channel.send(f'An exception has occurred in heartbeat_check: \n {e}')
 
 # gets a post's info based on uri
 async def get_post(uri):
@@ -145,10 +175,10 @@ async def heartbeat():
       global auto_tog
       global bot_did
       # tries to load user pickle files to save URI so that it doesn't just like/reply to posts endlessly in a loop
-      try: 
-        await load_users(user_data)
-      except Exception as e:
-        await logs.send(f'🟦 Error loading bluesky user pickle: \n {e}')
+#      try: 
+#        await load_users(user_data)
+#      except Exception as e:
+#        await logs.send(f'🟦 Error loading bluesky user pickle: \n {e}')
       try:
         check_new = await check_new_followers(bot_did,2)
         if check_new > 0:
@@ -204,8 +234,10 @@ async def heartbeat():
             # This is working now, only uncomment for debugging.
             #elif check_reply:
               #await logs.send(f'🟦 I already replied to this message, senpai! Nya~! \n URI: \n {uri}') 
-        await asyncio.sleep(2) # wait for 2 seconds before running again
-
+        try:
+          await asyncio.sleep(3) # wait for 3 seconds before running again
+        except Exception as e:
+          await logs.send(f'An exception has occurred during asyncio.sleep: \n {e}')
 
 async def check_new_followers(did, limit):
   global followers_did
@@ -243,7 +275,12 @@ async def check_new_followers(did, limit):
       result = lib.bluesky.feed['@0.0.2'].follows.create({
         'author': follower_id # required
       });
-      await logs.send(f'New user added: \n {result}')
+      try:
+        handle = result['displayName']
+        r_did = result['did']
+        await logs.send(f'New user added: \n {result}')
+      except Exception as e:
+        await logs.send(f"There's an error in your logging in announcing new followers: \n {e}")
       success += 1
     except Exception as e:
       await logs.send(f'🚨🟦 Bluesky module had an exception when trying to add a follower: \n {e}')
@@ -528,12 +565,12 @@ async def on_ready():
         #await logs.send(f"Global Commands...\n {str(len(synced_g))} commands sync'd: \n {synced_g}")
         #await logs.send(f"Local Commands... \n {str(len(synced))} commands sync'd: \n {synced}")
         await logs.send("uWu 🟦 bluesky social catgirl Kaelia starting up all systems~!")
-        await logs.send(f" ...loading prior Discord user data from drive...")
-        try:
-            await load_users(user_data)
-            await logs.send("Succesfully loaded prior user data!")
-        except:
-            await logs.send("error loading pickle file!")
+#        await logs.send(f" ...loading prior Discord user data from drive...")
+#        try:
+#            await load_users(user_data)
+#            await logs.send("Succesfully loaded prior user data!")
+#        except:
+#            await logs.send("error loading pickle file!")
         await logs.send(f"...setting up Bluesky parameters...")
         global lib
         global skyline_costs
@@ -544,7 +581,9 @@ async def on_ready():
         skoot = ''
         skyline_costs = 0
         running_costs = 0
-        lib = lib({'token': 'tok_dev_E5ToBL96nxfuD5sjWChDi1xARdBkT2xkcJHZ2rC3cVpHqUxmYyfhEDA8pAxdzUMp'})
+        lib = lib({'token': 'tok_dev_ntPBL7uJMSpP8xCTyZceHZA19YgtBSqdbfkHYF4PAQJchT2YcX74fA3WmWdTnbBC'})
+#        lib = lib({'token': 'tok_dev_on3KE7mFVkRV5sSzi3WzNcTzYmBSjbiCVSN5eR3ZkAYtsYTZqf7nUCWWa4suFRCk'})
+#        lib = lib({'token': 'tok_dev_E5ToBL96nxfuD5sjWChDi1xARdBkT2xkcJHZ2rC3cVpHqUxmYyfhEDA8pAxdzUMp'})
         #await logs.send(f" ...checking for new followers on Bluesky...")
         #check_new = await check_new_followers(bot_did,10)
         #await logs.send(f"There were {check_new} followers added successfully, senpai! nya~!")
@@ -576,6 +615,7 @@ async def on_ready():
         await logs.send(f"...starting Bluesky API heartbeat for autonomous likes + replies...")
         # start the heartbeat coroutine
         bot.loop.create_task(heartbeat())
+        await heartbeat_update()
 
 
 @bot.event
