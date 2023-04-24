@@ -281,9 +281,9 @@ async def heartbeat():
                reply_to_uri= uri
                context = await parent_tree(reply_to_uri)
                if len(context) != 0:
-                  prompt+= f'Your senpai and you have been part of a conversation on bluesky social, write your your next response to continue the conversation to be maximally in character as your role, Kaelia, but keep it less than 280 characters and do not append your repsonse with "Kaleia:" or double quotes.  Prior conversation: \n {context}'
+                  prompt+= f'Your senpai and you have been part of a conversation on bluesky social, write your your next response to continue the conversation to be maximally in character as your role, Kaelia, but keep it less than 280 characters and do not start your reply with "Kaelia🌸:" simply return your reply text.  Prior conversation: \n {context}'
                # logging function, comment out if it works:
-               await logs.send(f'***Here is the prompt + context for the reply:*** \n {prompt}')
+               await send_large_message(logs,f'***Here is the prompt + context for the reply:*** \n {prompt}',max_length=2000)
                while not check_character_length:
                 skoot0 = await AI(user_id,user_data,model, default_role, prompt, temp_default, 1, 0,max_tokens, False)
                 skoot1 = skoot0.choices[0].message.content
@@ -649,7 +649,7 @@ async def on_ready():
         skoot = ''
         skyline_costs = 0
         running_costs = 0
-        lib = lib({'token': 'tok_dev_ntPBL7uJMSpP8xCTyZceHZA19YgtBSqdbfkHYF4PAQJchT2YcX74fA3WmWdTnbBC'})
+        lib = lib({'token': 'tok_dev_LL5dsxfrykzwy6jAPxFLA4Duzb23mju1etMpGQqhBzaN5rPHwxniKXs6yjsBCZT1'})
 #        lib = lib({'token': 'tok_dev_on3KE7mFVkRV5sSzi3WzNcTzYmBSjbiCVSN5eR3ZkAYtsYTZqf7nUCWWa4suFRCk'})
 #        lib = lib({'token': 'tok_dev_E5ToBL96nxfuD5sjWChDi1xARdBkT2xkcJHZ2rC3cVpHqUxmYyfhEDA8pAxdzUMp'})
         #await logs.send(f" ...checking for new followers on Bluesky...")
