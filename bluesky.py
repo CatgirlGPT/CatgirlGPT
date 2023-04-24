@@ -61,8 +61,56 @@ save_path = '/home/inko1nsiderate/catgirl_prod/bluesky_pickles/'
 ### defines blue sky functions
 
 
-# heartbeat for posting
+# define regular posting
+async def post_scheduler():
+    while True:
+        # Load the last post time from a pickle file called "time"
+        try:
+            with open("time", "rb") as f:
+                last_post_time = pickle.load(f)
+        except FileNotFoundError:
+            last_post_time = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        # Calculate the time until the next post is due
+        next_post_time = last_post_time + datetime.timedelta(days=1)
+        time_until_next_post = (next_post_time - datetime.datetime.utcnow()).total_seconds()
+        # Sleep until the next post is due
+        await asyncio.sleep(time_until_next_post)
+        # Update the last post time
+        with open("time", "wb") as f:
+            pickle.dump(next_post_time, f)
+        # Choose the number of posts to make (between 6 and 12)
+        num_posts = random.randint(6, 12)
+        # Divide the next 24 hours into even intervals for the posts
+        interval_seconds = 24 * 3600 / num_posts
+        post_times = [next_post_time + datetime.timedelta(seconds=interval_seconds * i) for i in range(num_posts)]
+        # Post at the chosen times using a synchronous function called add_skoot
+        for post_time in post_times:
+            ti = running_costs  
+            time_until_post = (post_time - datetime.datetime.utcnow()).total_seconds()
+            await asyncio.sleep(time_until_post)
+            try:
+                prompt_kaelia = await AI('Kaelia','Kaelia',model, default_role, "Kaelia, pick a topic you could talk about in text of social meda, and write it as a prompt you might write to someone else.  Keep it less than 300 characters.", temp_default, 1, 0,max_tokens, False)
+                topic = prompt_kaelia.choices[0].message.content
+            except exception as e: 
+                await logs.send(f'Error with generating prompt for kaelia timed post: \n {e}')
+                topic = "Tell the people of bluesky you're thinking about them, and hope their day was amazing so far!"
+            try:
+                timed_msg = await AI('Kaelia','Kaelia',model, default_role, f"Write a message to bluesky social media in the character of your role Kaelia, and keep it less than 300 characters!  It should be a message about {topic}", temp_default, 1, 0,max_tokens, False)
+            except exception as e:
+                await logs.send(f'Error with generating prompt for kaelia from topic in timed post: \n {e}')
+                timed_msg =""
+            try:
+                if len(timed_msg) > 0:
+                    await post(timed_msg)
+                else:
+                    await logs.send(f'Empty post, did not send')
+            except exception as e:
+                    await logs.send(f'Error with sending skoot on bluesky in timed post: \n {e}')
+            tf = running_costs
+            delta = tf-ti
+            await logs.send(f'🟦 Bluesky cost for post: {delta}')
 
+# heartbeat for posting
 # Create a heartbeat so i can tell if program loop has hung or not:
 async def heartbeat_update():
     global log_channel
