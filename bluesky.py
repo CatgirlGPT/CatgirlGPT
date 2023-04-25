@@ -89,18 +89,18 @@ async def post_scheduler():
             time_until_post = (post_time - datetime.datetime.utcnow()).total_seconds()
             await asyncio.sleep(time_until_post)
             try:
-                prompt_kaelia = await AI('Kaelia','Kaelia',model, default_role, "Kaelia, pick a topic you could talk about in text of social meda, and write it as a prompt you might write to someone else.  Keep it less than 300 characters.", temp_default, 1, 0,max_tokens, False)
+                prompt_kaelia = await AI('Kaelia','Kaelia',model, default_role, "Kaelia, pick a topic you could talk about in text of social meda, and write it as a prompt you might write to someone else.  Keep it less than 290 characters.", temp_default, 1, 0,max_tokens, False)
                 topic = prompt_kaelia.choices[0].message.content
             except exception as e: 
                 await logs.send(f'Error with generating prompt for kaelia timed post: \n {e}')
                 topic = "Tell the people of bluesky you're thinking about them, and hope their day was amazing so far!"
             try:
-                timed_msg = await AI('Kaelia','Kaelia',model, default_role, f"Write a message to bluesky social media in the character of your role Kaelia, and keep it less than 300 characters!  It should be a message about {topic}", temp_default, 1, 0,max_tokens, False)
+                timed_msg = await AI('Kaelia','Kaelia',model, default_role, f"Write a message to bluesky social media in the character of your role Kaelia, and keep it less than 290 characters!  It should be a message about {topic}", temp_default, 1, 0,max_tokens, False)
             except exception as e:
                 await logs.send(f'Error with generating prompt for kaelia from topic in timed post: \n {e}')
                 timed_msg =""
             try:
-                if len(timed_msg) > 0:
+                if len(timed_msg) > 0 and len(timed_msg) <= 300:
                     await post(timed_msg)
                 else:
                     await logs.send(f'Empty post, did not send')
@@ -323,19 +323,26 @@ async def heartbeat():
                  await logs.send(f'🚨🟦  An exception has occurred while adding a like on bluesky: \n {e}')
               await logs.send(f'🟦 Received "mention" and reply_check returned false, autonomous toggle for bluesky mode: {auto_tog}')
               content = i['record']['text']
-              prompt = f"Your senpai sent you a message on bluesky social, write your response to continue the conversation to be maximally in character as your role, Kaelia, but keep it less than 280 characters. {content}"
+              prompt = f"Your senpai sent you a message on bluesky social, write your response to continue the conversation to be maximally in character as your role, Kaelia, but keep it less than 290 characters. Senpai's message: \n {content}"
               check_character_length = False
               if auto_tog:
                reply_to_uri= uri
                context = await parent_tree(reply_to_uri)
                if len(context) != 0:
-                  prompt+= f'Your senpai and you have been part of a conversation on bluesky social, write your your next response to continue the conversation to be maximally in character as your role, Kaelia, but keep it less than 280 characters and do not start your reply with "Kaelia🌸:" simply return your reply text.  Prior conversation: \n {context}'
+                  prompt = f'Your senpai and you having a conversation on bluesky social, your prior responses are identified with "Kaelia🌸:" but do not include that in the text of your resposne.  Write your your next response to continue the conversation to be maximally in character as your role, Kaelia, but keep it less than 290 characters, and simply return your reply text without attribution (eg do NOT prepend "Kaelia🌸:" or "Kaelia:" to your response).  Conversation so far: \n {context}'
                # logging function, comment out if it works:
                await send_large_message(logs,f'***Here is the prompt + context for the reply:*** \n {prompt}',max_length=2000)
                while not check_character_length:
-                skoot0 = await AI(user_id,user_data,model, default_role, prompt, temp_default, 1, 0,max_tokens, False)
-                skoot1 = skoot0.choices[0].message.content
-                if len(skoot1) <= 280:
+                reply_status = False
+                while not reply_status:
+                  try:
+                    skoot0 = await AI(user_id,user_data,model, default_role, prompt, temp_default, 1, 0,max_tokens, False)
+                    skoot1 = skoot0.choices[0].message.content
+                    reply_status = True
+                  except exception as e:
+                    await logs.send(f'OpenAI api error: \n {e}')
+                    await asyncio.sleep(3) # sleeps for 3 seconds
+                if len(skoot1) <= 290:
                     check_character_length = True
                     try:
                         double_check_reply = await check_reply_status(uri,bot_did)
@@ -351,6 +358,7 @@ async def heartbeat():
             #elif check_reply:
               #await logs.send(f'🟦 I already replied to this message, senpai! Nya~! \n URI: \n {uri}') 
         try:
+          await post_scheduler() # sets up automatic posting 6 to 12 times per day.
           await asyncio.sleep(3) # wait for 3 seconds before running again
         except Exception as e:
           await logs.send(f'An exception has occurred during asyncio.sleep: \n {e}')
