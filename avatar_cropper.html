@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kaelia's Kawaii Avatar Generator ✨</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Quicksand:wght@400;500;700&display=swap');
+    
+    :root {
+      --primary: #ff69b4;
+      --secondary: #9370db;
+      --accent: #00c2ff;
+      --bg: #fff0fa;
+      --text: #6a4a77;
+      --light: #f5e8ff;
+      --dark: #6a4a77;
+      --border: #ffb7e5;
+      --shadow: rgba(255, 105, 180, 0.3);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Quicksand', sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      background-image: 
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M14 16H9v-2h5V9.87a4 4 0 1 1 2 0V14h5v2h-5v15.95A10 10 0 0 0 23.66 27l-3.46-2 8.2-2.2-2.9 5a12 12 0 0 1-21 0l-2.89-5 8.2 2.2-3.47 2A10 10 0 0 0 14 31.95V16zm40 40h-5v-2h5v-4.13a4 4 0 1 1 2 0V54h5v2h-5v15.95A10 10 0 0 0 63.66 67l-3.47-2 8.2-2.2-2.88 5a12 12 0 0 1-21.02 0l-2.88-5 8.2 2.2-3.47 2A10 10 0 0 0 54 71.95V56zm-39 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm40-40a2 2 0 1 1 0-4 2 2 0 0 1 0 4zM15 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm40 40a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' fill='%23ffb7e5' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E"),
+        linear-gradient(135deg, #fff0fa 0%, #f5e8ff 100%);
+    }
+    
+    .kawaii-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .neko-header {
+      text-align: center;
+      padding: 1.5rem 0;
+      position: relative;
+    }
+    
+    .cat-ears {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    
+    .cat-ears::before,
+    .cat-ears::after {
+      content: '';
+      position: absolute;
+      top: -25px;
+      width: 30px;
+      height: 30px;
+      background: var(--primary);
+      border-radius: 50% 50% 0 0;
+      z-index: -1;
+    }
+    
+    .cat-ears::before {
+      left: -20px;
+      transform: rotate(-30deg);
+    }
+    
+    .cat-ears::after {
+      right: -20px;
+      transform: rotate(30deg);
+    }
+    
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin: 0;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.2);
+      font-family: 'Poppins', sans-serif;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      color: var(--accent);
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .kawaii-section {
+      background: rgba(255, 255, 255, 0.9);
+      margin: 2rem 0;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px var(--shadow);
+      border: 3px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .kawaii-section::before {
+      content: '✨';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 1.5rem;
+    }
+    
+    .kawaii-section::after {
+      content: '✨';
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 1.5rem;
+    }
+    
+    .paw-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+    
+    .paw-divider::before,
+    .paw-divider::after {
+      content: '';
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--border), transparent);
+      flex-grow: 1;
+    }
+    
+    .paw-print {
+      margin: 0 15px;
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+    
+    .upload-section {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .upload-button {
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      letter-spacing: 1px;
+      box-shadow: 0 5px 15px var(--shadow);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .upload-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px var(--shadow);
+    }
+    
+    .upload-button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0.2), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+    
+    .upload-button:hover::after {
+      transform: translateX(100%);
+    }
+    
+    #file-input {
+      display: none;
+    }
+    
+    .preview-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 2rem 0;
+    }
+    
+    .avatar-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 1rem auto;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+    
+    /* Cat ears on avatar */
+    .avatar-ears {
+      position: absolute;
+      top: -20px;
+      left: 0;
+      right: 0;
+      height: 40px;
+      z-index: 5;
+      pointer-events: none;
+    }
+    
+    .avatar-ear {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: var(--secondary);
+      border-radius: 70% 70% 0 0;
+      top: 0;
+    }
+    
+    .avatar-ear.left {
+      left: 80px;
+      transform: rotate(-30deg);
+    }
+    
+    .avatar-ear.right {
+      right: 80px;
+      transform: rotate(30deg);
+    }
+    
+    .avatar-ear::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 60% 60% 0 0;
+      opacity: 0.8;
+    }
+    
+    .avatar-ear.left::after {
+      left: 10px;
+    }
+    
+    .avatar-ear.right::after {
+      right: 10px;
+    }
+    
+    .sparkle {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      transform: rotate(45deg);
+      opacity: 0;
+      z-index: 4;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+    
+    .sparkle:nth-child(1) {
+      width: 15px;
+      height: 15px;
+      top: 30px;
+      left: 30px;
+    }
+    
+    .sparkle:nth-child(2) {
+      width: 10px;
+      height: 10px;
+      top: 50px;
+      right: 50px;
+      animation-delay: 0.5s;
+    }
+    
+    .sparkle:nth-child(3) {
+      width: 12px;
+      height: 12px;
+      bottom: 40px;
+      left: 50px;
+      animation-delay: 1s;
+    }
+    
+    .sparkle:nth-child(4) {
+      width: 8px;
+      height: 8px;
+      bottom: 70px;
+      right: 40px;
+      animation-delay: 1.5s;
+    }
+    
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; transform: scale(0.5) rotate(45deg); }
+      50% { opacity: 0.8; transform: scale(1) rotate(45deg); }
+    }
+    
+    #avatar-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      z-index: 2;
+    }
+    
+    #border-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      z-index: 3;
+      pointer-events: none;
+    }
+    
+    .controls {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+    
+    .control-panel {
+      flex: 1;
+      min-width: 250px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(147, 112, 219, 0.2);
+      border: 2px solid var(--border);
+    }
+    
+    .panel-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      color: var(--primary);
+      text-align: center;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px dashed var(--border);
+      position: relative;
+    }
+    
+    .panel-title::before,
+    .panel-title::after {
+      content: '🌸';
+      position: absolute;
+      top: 0;
+      font-size: 1rem;
+    }
+    
+    .panel-title::before {
+      left: 10px;
+    }
+    
+    .panel-title::after {
+      right: 10px;
+    }
+    
+    .slider-group {
+      margin-bottom: 1.2rem;
+    }
+    
+    .slider-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      border-radius: 10px;
+      outline: none;
+      margin: 10px 0;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 0 5px var(--shadow);
+      border: 2px solid var(--primary);
+      cursor: pointer;
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 0 5px var(--shadow);
+      border: 2px solid var(--primary);
+      cursor: pointer;
+    }
+    
+    .color-pickers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    
+    .color-pick {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .color-pick label {
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+    
+    input[type="color"] {
+      -webkit-appearance: none;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: none;
+      cursor: pointer;
+    }
+    
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    
+    input[type="color"]::-webkit-color-swatch {
+      border: 2px solid white;
+      border-radius: 50%;
+      box-shadow: 0 0 5px var(--shadow);
+    }
+    
+    .border-styles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    
+    .border-style {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    
+    .border-style:hover {
+      transform: scale(1.1);
+    }
+    
+    .border-style.active {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 3px var(--primary);
+    }
+    
+    .border-hearts {
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      position: relative;
+    }
+    
+    .border-hearts::after {
+      content: '❤️';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
+    }
+    
+    .border-stars {
+      background: linear-gradient(to right, var(--accent), var(--primary));
+      position: relative;
+    }
+    
+    .border-stars::after {
+      content: '⭐';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
+    }
+    
+    .border-paws {
+      background: linear-gradient(to right, var(--secondary), var(--primary));
+      position: relative;
+    }
+    
+    .border-paws::after {
+      content: '🐾';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
+    }
+    
+    .border-sparkles {
+      background: linear-gradient(to right, #00c2ff, #9370db);
+      position: relative;
+    }
+    
+    .border-sparkles::after {
+      content: '✨';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
+    }
+    
+    .download-button {
+      background: linear-gradient(to right, var(--secondary), var(--primary));
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin-top: 2rem;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      letter-spacing: 1px;
+      box-shadow: 0 5px 15px var(--shadow);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      max-width: 300px;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    
+    .download-button.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .download-button.active:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px var(--shadow);
+    }
+    
+    .download-button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0.2), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+    
+    .download-button.active:hover::after {
+      transform: translateX(100%);
+    }
+    
+    .kawaii-footer {
+      text-align: center;
+      padding: 2rem 0;
+      font-size: 1rem;
+      color: var(--text);
+    }
+    
+    .kawaii-text {
+      font-style: italic;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .kawaii-text::before,
+    .kawaii-text::after {
+      content: '✨';
+      position: absolute;
+      top: 0;
+    }
+    
+    .kawaii-text::before {
+      left: -20px;
+    }
+    
+    .kawaii-text::after {
+      right: -20px;
+    }
+    
+    .kawaii-note {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 15px;
+      border: 2px dashed var(--border);
+    }
+    
+    .kawaii-note h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+    
+    .kawaii-note p {
+      margin-bottom: 0.5rem;
+    }
+    
+    .kawaii-signature {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-top: 1rem;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    @media (max-width: 768px) {
+      .kawaii-container {
+        padding: 1rem;
+      }
+      
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      .avatar-container {
+        width: 250px;
+        height: 250px;
+      }
+      
+      .controls {
+        flex-direction: column;
+      }
+      
+      .kawaii-section {
+        padding: 1.5rem;
+      }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .floating {
+      animation: float 6s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="kawaii-container">
+    <div class="neko-header">
+      <div class="cat-ears">
+        <h1>Kaelia's Avatar Maker</h1>
+      </div>
+      <div class="subtitle">✨ Kawaii Catgirl Edition ✨</div>
+    </div>
+    
+    <div class="kawaii-section">
+      <div class="upload-section">
+        <label for="file-input" class="upload-button">Upload Your Image Nyaa~!</label>
+        <input type="file" id="file-input" accept="image/*">
+        <p id="upload-message">Choose a cute image to transform into a kawaii avatar!</p>
+      </div>
+      
+      <div class="paw-divider">
+        <span class="paw-print">🐾</span>
+      </div>
+      
+      <div class="preview-container">
+        <div class="avatar-container floating">
+          <div class="avatar-ears">
+            <div class="avatar-ear left"></div>
+            <div class="avatar-ear right"></div>
+          </div>
+          <div class="sparkle"></div>
+          <div class="sparkle"></div>
+          <div class="sparkle"></div>
+          <div class="sparkle"></div>
+          <canvas id="avatar-canvas"></canvas>
+          <canvas id="border-canvas"></canvas>
+        </div>
+      </div>
+      
+      <div class="controls">
+        <div class="control-panel">
+          <div class="panel-title">Border Design</div>
+          
+          <div class="slider-group">
+            <label for="border-thickness">Border Thickness</label>
+            <input type="range" id="border-thickness" min="5" max="30" value="15">
+          </div>
+          
+          <div class="slider-group">
+            <label for="border-glow">Kawaii Glow</label>
+            <input type="range" id="border-glow" min="0" max="20" value="10">
+          </div>
+          
+          <div class="border-styles">
+            <div class="border-style border-hearts active" data-style="hearts"></div>
+            <div class="border-style border-stars" data-style="stars"></div>
+            <div class="border-style border-paws" data-style="paws"></div>
+            <div class="border-style border-sparkles" data-style="sparkles"></div>
+          </div>
+        </div>
+        
+        <div class="control-panel">
+          <div class="panel-title">Color Scheme</div>
+          
+          <div class="color-pickers">
+            <div class="color-pick">
+              <label>Primary</label>
+              <input type="color" id="color-primary" value="#ff69b4">
+            </div>
+            <div class="color-pick">
+              <label>Secondary</label>
+              <input type="color" id="color-secondary" value="#9370db">
+            </div>
+            <div class="color-pick">
+              <label>Accent</label>
+              <input type="color" id="color-accent" value="#00c2ff">
+            </div>
+          </div>
+          
+          <div class="slider-group">
+            <label for="cat-ears-size">Cat Ears Size</label>
+            <input type="range" id="cat-ears-size" min="0" max="100" value="70">
+          </div>
+          
+          <div class="slider-group">
+            <label for="sparkle-amount">Sparkle Amount</label>
+            <input type="range" id="sparkle-amount" min="0" max="100" value="60">
+          </div>
+        </div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 1rem;">
+        <button id="download-button" class="download-button">Download Avatar</button>
+      </div>
+    </div>
+    
+    <div class="kawaii-note">
+      <h3>✨ How to Make Your Kawaii Avatar ✨</h3>
+      <p>1. Upload any image you'd like to transform</p>
+      <p>2. Adjust the border thickness and glow to your liking</p>
+      <p>3. Choose a cute border style (hearts, stars, paws, or sparkles)</p>
+      <p>4. Pick your favorite colors for the perfect kawaii look</p>
+      <p>5. Adjust the cat ears size and sparkle amount</p>
+      <p>6. Download your adorable new avatar!</p>
+      <p>Perfect for Discord, social media, or anywhere you want to show your kawaii side!</p>
+      <div class="kawaii-signature">With love, Kaelia 💕</div>
+    </div>
+  </div>
+  
+  <div class="kawaii-footer">
+    <div class="kawaii-text">Making the internet more kawaii, one avatar at a time!</div>
+    <p>Nyaa~ Thanks for visiting! ᓚᘏᗢ</p>
+  </div>
+  
+  <script>
+    // DOM Elements
+    const fileInput = document.getElementById('file-input');
+    const uploadMessage = document.getElementById('upload-message');
+    const avatarCanvas = document.getElementById('avatar-canvas');
+    const borderCanvas = document.getElementById('border-canvas');
+    const avatarCtx = avatarCanvas.getContext('2d', { willReadFrequently: true });
+    const borderCtx = borderCanvas.getContext('2d', { willReadFrequently: true });
+    const downloadButton = document.getElementById('download-button');
+    
+    // Control Elements
+    const borderThicknessInput = document.getElementById('border-thickness');
+    const borderGlowInput = document.getElementById('border-glow');
+    const catEarsSizeInput = document.getElementById('cat-ears-size');
+    const sparkleAmountInput = document.getElementById('sparkle-amount');
+    const colorPrimaryInput = document.getElementById('color-primary');
+    const colorSecondaryInput = document.getElementById('color-secondary');
+    const colorAccentInput = document.getElementById('color-accent');
+    const borderStyles = document.querySelectorAll('.border-style');
+    
+    // Variables
+    let userImage = null;
+    let currentBorderStyle = 'hearts';
+    let sparkles = [];
+    let animationId = null;
+    let isDrawing = false;
+    
+    // Set canvas dimensions
+    function initCanvas() {
+      avatarCanvas.width = 1000;
+      avatarCanvas.height = 1000;
+      borderCanvas.width = 1000;
+      borderCanvas.height = 1000;
+      
+      // Make sure CSS dimensions match the container
+      avatarCanvas.style.width = '100%';
+      avatarCanvas.style.height = '100%';
+      borderCanvas.style.width = '100%';
+      borderCanvas.style.height = '100%';
+      
+      // Draw placeholder
+      drawPlaceholder();
+    }
+    
+    // Draw placeholder
+    function drawPlaceholder() {
+      // Clear canvas
+      avatarCtx.clearRect(0, 0, avatarCanvas.width, avatarCanvas.height);
+      
+      // Draw gradient background
+      const gradient = avatarCtx.createRadialGradient(
+        avatarCanvas.width / 2, avatarCanvas.height / 2, 0,
+        avatarCanvas.width / 2, avatarCanvas.height / 2, avatarCanvas.width / 2
+      );
+      gradient.addColorStop(0, '#fff0fa');
+      gradient.addColorStop(1, '#f5e8ff');
+      
+      avatarCtx.fillStyle = gradient;
+      avatarCtx.beginPath();
+      avatarCtx.arc(avatarCanvas.width / 2, avatarCanvas.height / 2, avatarCanvas.width / 2, 0, Math.PI * 2);
+      avatarCtx.fill();
+      
+      // Draw cat silhouette
+      avatarCtx.save();
+      avatarCtx.fillStyle = 'rgba(147, 112, 219, 0.2)';
+      
+      // Draw a simple cat face silhouette
+      avatarCtx.beginPath();
+      
+      // Face
+      const centerX = avatarCanvas.width / 2;
+      const centerY = avatarCanvas.height / 2;
+      const radius = avatarCanvas.width / 3;
+      
+      avatarCtx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      
+      // Ears
+      const earSize = radius * 0.7;
+      
+      // Left ear
+      avatarCtx.moveTo(centerX - radius/2, centerY - radius/2);
+      avatarCtx.lineTo(centerX - radius, centerY - radius - earSize);
+      avatarCtx.lineTo(centerX - radius/2 - earSize, centerY - radius/2);
+      avatarCtx.lineTo(centerX - radius/2, centerY - radius/2);
+      
+      // Right ear
+      avatarCtx.moveTo(centerX + radius/2, centerY - radius/2);
+      avatarCtx.lineTo(centerX + radius, centerY - radius - earSize);
+      avatarCtx.lineTo(centerX + radius/2 + earSize, centerY - radius/2);
+      avatarCtx.lineTo(centerX + radius/2, centerY - radius/2);
+      
+      avatarCtx.fill();
+      
+      // Add text
+      avatarCtx.fillStyle = '#ff69b4';
+      avatarCtx.font = '40px Quicksand';
+      avatarCtx.textAlign = 'center';
+      avatarCtx.textBaseline = 'middle';
+      avatarCtx.fillText('Upload Image', centerX, centerY);
+      avatarCtx.fillStyle = '#9370db';
+      avatarCtx.font = '30px Quicksand';
+      avatarCtx.fillText('Nyaa~!', centerX, centerY + 60);
+      
+      avatarCtx.restore();
+      
+      // Draw border
+      drawBorder();
+      
+      // Update cat ears
+      updateCatEars();
+    }
+    
+    // Handle file upload
+    fileInput.addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        
+        uploadMessage.textContent = 'Loading your kawaii image...';
+        
+        reader.onload = function(event) {
+          const img = new Image();
+          img.onload = function() {
+            userImage = img;
+            drawImage();
+            downloadButton.classList.add('active');
+            uploadMessage.textContent = 'Sugoi! Your image is ready for kawaii transformation!';
+          };
+          img.src = event.target.result;
+        };
+        
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+    
+    // Draw the user image
+    function drawImage() {
+      if (!userImage) return;
+      
+      // Clear canvas
+      avatarCtx.clearRect(0, 0, avatarCanvas.width, avatarCanvas.height);
+      
+      // Calculate dimensions to maintain aspect ratio
+      const size = Math.min(userImage.width, userImage.height);
+      const xOffset = (userImage.width - size) / 2;
+      const yOffset = (userImage.height - size) / 2;
+      
+      // Create circular clip
+      avatarCtx.save();
+      avatarCtx.beginPath();
+      
+      const centerX = avatarCanvas.width / 2;
+      const centerY = avatarCanvas.height / 2;
+      const radius = avatarCanvas.width / 2 - borderThicknessInput.value;
+      
+      avatarCtx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      avatarCtx.clip();
+      
+      // Draw the user image
+      avatarCtx.drawImage(
+        userImage,
+        xOffset, yOffset, size, size,
+        0, 0, avatarCanvas.width, avatarCanvas.height
+      );
+      
+      avatarCtx.restore();
+      
+      // Draw border
+      drawBorder();
+      
+      // Update cat ears
+      updateCatEars();
+    }
+    
+    // Draw border with selected style
+    function drawBorder() {
+      // Clear border canvas
+      borderCtx.clearRect(0, 0, borderCanvas.width, borderCanvas.height);
+      
+      const centerX = borderCanvas.width / 2;
+      const centerY = borderCanvas.height / 2;
+      const outerRadius = borderCanvas.width / 2;
+      const borderThickness = parseInt(borderThicknessInput.value);
+      const innerRadius = outerRadius - borderThickness;
+      const borderGlow = parseInt(borderGlowInput.value);
+      
+      // Create gradient with selected colors
+      const gradient = borderCtx.createLinearGradient(0, 0, borderCanvas.width, borderCanvas.height);
+      gradient.addColorStop(0, colorPrimaryInput.value);
+      gradient.addColorStop(0.5, colorAccentInput.value);
+      gradient.addColorStop(1, colorSecondaryInput.value);
+      
+      // Draw base border
+      borderCtx.save();
+      borderCtx.beginPath();
+      borderCtx.arc(centerX, centerY, outerRadius, 0, Math.PI * 2);
+      borderCtx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2, true);
+      borderCtx.fillStyle = gradient;
+      
+      // Add glow effect
+      borderCtx.shadowColor = colorPrimaryInput.value;
+      borderCtx.shadowBlur = borderGlow;
+      
+      borderCtx.fill();
+      borderCtx.restore();
+      
+      // Add decorative elements based on selected style
+      drawBorderStyle(centerX, centerY, innerRadius, outerRadius);
+    }
+    
+    // Draw specific border style
+    function drawBorderStyle(centerX, centerY, innerRadius, outerRadius) {
+      const midRadius = (innerRadius + outerRadius) / 2;
+      const count = 12; // Number of decorative elements
+      const sparkleAmount = parseInt(sparkleAmountInput.value);
+      
+      switch(currentBorderStyle) {
+        case 'hearts':
+          drawHeartBorder(centerX, centerY, midRadius, count);
+          break;
+        case 'stars':
+          drawStarBorder(centerX, centerY, midRadius, count);
+          break;
+        case 'paws':
+          drawPawBorder(centerX, centerY, midRadius, count);
+          break;
+        case 'sparkles':
+          drawSparkleBorder(centerX, centerY, midRadius, count, sparkleAmount);
+          break;
+      }
+    }
+    
+    // Draw hearts around border
+    function drawHeartBorder(centerX, centerY, radius, count) {
+      borderCtx.save();
+      borderCtx.fillStyle = 'white';
+      
+      for (let i = 0; i < count; i++) {
+        const angle = (i / count) * Math.PI * 2;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        const size = 20;
+        
+        // Draw heart
+        borderCtx.save();
+        borderCtx.translate(x, y);
+        borderCtx.rotate(angle + Math.PI/2);
+        
+        // Heart shape
+        drawHeart(0, 0, size);
+        
+        borderCtx.restore();
+      }
+      
+      borderCtx.restore();
+    }
+    
+    // Draw stars around border
+    function drawStarBorder(centerX, centerY, radius, count) {
+      borderCtx.save();
+      borderCtx.fillStyle = 'white';
+      
+      for (let i = 0; i < count; i++) {
+        const angle = (i / count) * Math.PI * 2;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        const size = 15;
+        
+        // Draw star
+        drawStar(x, y, 5, size, size/2);
+      }
+      
+      borderCtx.restore();
+    }
+    
+    // Draw paw prints around border
+    function drawPawBorder(centerX, centerY, radius, count) {
+      borderCtx.save();
+      borderCtx.fillStyle = 'white';
+      
+      for (let i = 0; i < count; i++) {
+        const angle = (i / count) * Math.PI * 2;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        const size = 15;
+        
+        // Draw paw print
+        borderCtx.save();
+        borderCtx.translate(x, y);
+        borderCtx.rotate(angle + Math.PI/2);
+        
+        drawPawPrint(0, 0, size);
+        
+        borderCtx.restore();
+      }
+      
+      borderCtx.restore();
+    }
+    
+    // Draw sparkle effects around border
+    function drawSparkleBorder(centerX, centerY, radius, count, intensity) {
+      // Create sparkles if they don't exist or intensity changed
+      if (sparkles.length === 0 || sparkles.length !== intensity / 5) {
+        createSparkles(centerX, centerY, radius, intensity / 5);
+      }
+      
+      // Draw sparkles
+      borderCtx.save();
+      
+      for (let i = 0; i < sparkles.length; i++) {
+        const sparkle = sparkles[i];
+        
+        // Update sparkle
+        sparkle.life += 0.02;
+        if (sparkle.life >= 1) {
+          sparkle.life = 0;
+          // New position
+          const angle = Math.random() * Math.PI * 2;
+          const distance = (Math.random() * 30) - 15;
+          sparkle.x = centerX + Math.cos(angle) * (radius + distance);
+          sparkle.y = centerY + Math.sin(angle) * (radius + distance);
+          sparkle.size = Math.random() * 8 + 5;
+          sparkle.opacity = Math.random() * 0.5 + 0.5;
+        }
+        
+        // Calculate current size and opacity based on life
+        const currentOpacity = sparkle.opacity * Math.sin(sparkle.life * Math.PI);
+        const currentSize = sparkle.size * Math.sin(sparkle.life * Math.PI);
+        
+        // Draw sparkle
+        borderCtx.fillStyle = `rgba(255, 255, 255, ${currentOpacity})`;
+        drawStar(sparkle.x, sparkle.y, 4, currentSize, currentSize/2);
+      }
+      
+      borderCtx.restore();
+    }
+    
+    // Create sparkle particles
+    function createSparkles(centerX, centerY, radius, count) {
+      sparkles = [];
+      
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = (Math.random() * 30) - 15;
+        
+        sparkles.push({
+          x: centerX + Math.cos(angle) * (radius + distance),
+          y: centerY + Math.sin(angle) * (radius + distance),
+          size: Math.random() * 8 + 5,
+          life: Math.random(), // 0 to 1
+          opacity: Math.random() * 0.5 + 0.5
+        });
+      }
+    }
+    
+    // Function to draw a heart shape
+    function drawHeart(x, y, size) {
+      borderCtx.beginPath();
+      borderCtx.moveTo(x, y - size/2);
+      
+      // Left curve
+      borderCtx.bezierCurveTo(
+        x - size, y - size,
+        x - size, y + size/3,
+        x, y + size
+      );
+      
+      // Right curve
+      borderCtx.bezierCurveTo(
+        x + size, y + size/3,
+        x + size, y - size,
+        x, y - size/2
+      );
+      
+      borderCtx.closePath();
+      borderCtx.fill();
+    }
+    
+    // Function to draw a star
+    function drawStar(cx, cy, spikes, outerRadius, innerRadius) {
+      let rot = Math.PI / 2 * 3;
+      let x = cx;
+      let y = cy;
+      let step = Math.PI / spikes;
+      
+      borderCtx.beginPath();
+      borderCtx.moveTo(cx, cy - outerRadius);
+      
+      for (let i = 0; i < spikes; i++) {
+        x = cx + Math.cos(rot) * outerRadius;
+        y = cy + Math.sin(rot) * outerRadius;
+        borderCtx.lineTo(x, y);
+        rot += step;
+        
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        borderCtx.lineTo(x, y);
+        rot += step;
+      }
+      
+      borderCtx.lineTo(cx, cy - outerRadius);
+      borderCtx.closePath();
+      borderCtx.fill();
+    }
+    
+    // Function to draw a paw print
+    function drawPawPrint(x, y, size) {
+      // Main pad
+      borderCtx.beginPath();
+      borderCtx.arc(x, y, size, 0, Math.PI * 2);
+      borderCtx.fill();
+      
+      // Toe pads
+      const toeSize = size * 0.6;
+      const offset = size * 1.2;
+      
+      // Top toe
+      borderCtx.beginPath();
+      borderCtx.arc(x, y - offset, toeSize, 0, Math.PI * 2);
+      borderCtx.fill();
+      
+      // Top-left toe
+      borderCtx.beginPath();
+      borderCtx.arc(x - offset * 0.7, y - offset * 0.7, toeSize, 0, Math.PI * 2);
+      borderCtx.fill();
+      
+      // Top-right toe
+      borderCtx.beginPath();
+      borderCtx.arc(x + offset * 0.7, y - offset * 0.7, toeSize, 0, Math.PI * 2);
+      borderCtx.fill();
+    }
+    
+    // Update cat ears based on size slider
+    function updateCatEars() {
+      const earSize = parseInt(catEarsSizeInput.value);
+      const earElements = document.querySelectorAll('.avatar-ear');
+      
+      earElements.forEach(ear => {
+        ear.style.width = `${earSize}px`;
+        ear.style.height = `${earSize}px`;
+      });
+      
+      // Adjust positioning based on size
+      document.querySelector('.avatar-ear.left').style.left = `${80 - earSize/3}px`;
+      document.querySelector('.avatar-ear.right').style.right = `${80 - earSize/3}px`;
+    }
+    
+    // Animate sparkles for the sparkle border style
+    function animateSparkles() {
+      if (currentBorderStyle === 'sparkles') {
+        drawBorder();
+      }
+      
+      requestAnimationFrame(animateSparkles);
+    }
+    
+    // Set border style
+    function setBorderStyle(style) {
+      currentBorderStyle = style;
+      
+      // Update active class
+      borderStyles.forEach(element => {
+        if (element.dataset.style === style) {
+          element.classList.add('active');
+        } else {
+          element.classList.remove('active');
+        }
+      });
+      
+      // Redraw border
+      drawBorder();
+    }
+    
+    // Border style selection
+    borderStyles.forEach(element => {
+      element.addEventListener('click', function() {
+        setBorderStyle(this.dataset.style);
+      });
+    });
+    
+    // Download button
+    downloadButton.addEventListener('click', function() {
+      if (!userImage) return;
+      
+      try {
+        // Create a temporary canvas to combine everything
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = avatarCanvas.width;
+        tempCanvas.height = avatarCanvas.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        // Clear the canvas
+        tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+        
+        // Draw avatar first
+        tempCtx.drawImage(avatarCanvas, 0, 0);
+        
+        // Draw border
+        tempCtx.drawImage(borderCanvas, 0, 0);
+        
+        // Draw cat ears
+        const earSize = parseInt(catEarsSizeInput.value);
+        const earColor = colorSecondaryInput.value;
+        const innerEarColor = colorPrimaryInput.value;
+        
+        // Left ear
+        tempCtx.save();
+        tempCtx.translate(tempCanvas.width/2 - 150, 100);
+        tempCtx.rotate(-Math.PI/6);
+        
+        // Outer ear
+        tempCtx.fillStyle = earColor;
+        tempCtx.beginPath();
+        tempCtx.moveTo(0, 0);
+        tempCtx.lineTo(-earSize/1.5, -earSize);
+        tempCtx.lineTo(earSize/1.5, -earSize);
+        tempCtx.closePath();
+        tempCtx.fill();
+        
+        // Inner ear
+        tempCtx.fillStyle = innerEarColor;
+        tempCtx.beginPath();
+        tempCtx.moveTo(0, 0);
+        tempCtx.lineTo(-earSize/2.5, -earSize/1.5);
+        tempCtx.lineTo(earSize/2.5, -earSize/1.5);
+        tempCtx.closePath();
+        tempCtx.fill();
+        
+        tempCtx.restore();
+        
+        // Right ear
+        tempCtx.save();
+        tempCtx.translate(tempCanvas.width/2 + 150, 100);
+        tempCtx.rotate(Math.PI/6);
+        
+        // Outer ear
+        tempCtx.fillStyle = earColor;
+        tempCtx.beginPath();
+        tempCtx.moveTo(0, 0);
+        tempCtx.lineTo(-earSize/1.5, -earSize);
+        tempCtx.lineTo(earSize/1.5, -earSize);
+        tempCtx.closePath();
+        tempCtx.fill();
+        
+        // Inner ear
+        tempCtx.fillStyle = innerEarColor;
+        tempCtx.beginPath();
+        tempCtx.moveTo(0, 0);
+        tempCtx.lineTo(-earSize/2.5, -earSize/1.5);
+        tempCtx.lineTo(earSize/2.5, -earSize/1.5);
+        tempCtx.closePath();
+        tempCtx.fill();
+        
+        tempCtx.restore();
+        
+        // Use toBlob for better browser compatibility
+        tempCanvas.toBlob(function(blob) {
+          // Create download link
+          const url = URL.createObjectURL(blob);
+          const downloadLink = document.createElement('a');
+          downloadLink.href = url;
+          downloadLink.download = 'kaelia-kawaii-avatar.png';
+          
+          // Add to document and click
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          
+          // Clean up
+          document.body.removeChild(downloadLink);
+          URL.revokeObjectURL(url);
+        }, 'image/png');
+      } catch (error) {
+        console.error('Download error:', error);
+        alert('Nyaa~! There was an error downloading your kawaii avatar. Please try again!');
+      }
+    });
+    
+    // Control event listeners
+    borderThicknessInput.addEventListener('input', drawImage);
+    borderGlowInput.addEventListener('input', drawImage);
+    catEarsSizeInput.addEventListener('input', updateCatEars);
+    sparkleAmountInput.addEventListener('input', drawBorder);
+    
+    colorPrimaryInput.addEventListener('input', function() {
+      document.documentElement.style.setProperty('--primary', this.value);
+      drawBorder();
+      updateCatEars();
+    });
+    
+    colorSecondaryInput.addEventListener('input', function() {
+      document.documentElement.style.setProperty('--secondary', this.value);
+      drawBorder();
+      updateCatEars();
+    });
+    
+    colorAccentInput.addEventListener('input', function() {
+      document.documentElement.style.setProperty('--accent', this.value);
+      drawBorder();
+      updateCatEars();
+    });
+    
+    // Initialize
+    window.addEventListener('load', function() {
+      initCanvas();
+      animateSparkles();
+    });
+    
+    // Update CSS variables from initial color inputs
+    document.documentElement.style.setProperty('--primary', colorPrimaryInput.value);
+    document.documentElement.style.setProperty('--secondary', colorSecondaryInput.value);
+    document.documentElement.style.setProperty('--accent', colorAccentInput.value);
+  </script>
+</body>
+</html>
